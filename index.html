@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Batalla de Dados</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex align-items-center justify-content-center vh-100 bg-light">
+  <div style="width: 100%; max-width: 500px;">
+    <div id="pantalla-inicial" class="card p-4 shadow text-center">
+      <h1 class="mb-4">Batalla de Dados</h1>
+
+      <div class="mb-3 text-start">
+        <label for="nombre-j1" class="form-label">Nombre Jugador 1:</label>
+        <input type="text" id="nombre-j1" class="form-control" placeholder="Jugador A">
+      </div>
+
+      <div class="mb-3 text-start">
+        <label for="nombre-j2" class="form-label">Nombre Jugador 2:</label>
+        <input type="text" id="nombre-j2" class="form-control" placeholder="Jugador B">
+      </div>
+
+      <button id="boton-jugar" class="btn btn-primary btn-lg w-100 mt-3">Jugar</button>
+    </div>
+
+    <div id="pantalla-juego" class="card p-4 shadow d-none">
+
+<div class="text-center w-100">
+    <img id="avatar-j1" src="jugador.jpg" width="90" class="mb-2">
+    <h2 id="nombre-tablero-j1" class="text-primary"></h2>
+    <p>Tirada: <span id="puntos-j1" class="fw-bold fs-4">-</span></p>
+    <p>Rondas Ganadas: <span id="rondas-ganadas-j1" class="fw-bold fs-4">0</span></p>
+    <button id="btn-j1" class="btn btn-success w-75">Tirar Dado</button>
+</div>
+
+      <hr class="w-100 my-4">
+
+<div class="text-center w-100">
+    <img id="avatar-j2" src="jugador.jpg" width="90" class="mb-2">
+    <h2 id="nombre-tablero-j2" class="text-danger"></h2>
+    <p>Tirada: <span id="puntos-j2" class="fw-bold fs-4">-</span></p>
+    <p>Rondas Ganadas: <span id="rondas-ganadas-j2" class="fw-bold fs-4">0</span></p>
+    <button id="btn-j2" class="btn btn-success w-75">Tirar Dado</button>
+</div>
+
+      <hr class="w-100 my-4">
+
+      <h3 id="mensaje-ronda" class="text-muted">¡Que comience el juego!</h3>
+      <button id="btn-reiniciar" class="btn btn-outline-danger mt-3">Reiniciar Juego</button>
+    </div>
+  </div>
+
+<script src="./js/juego.js" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</body>
+</html>
