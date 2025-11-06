@@ -3,55 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Batalla de Dados</title>
+  <title>Batalla de Dados</title> <!-- Titulo de la página -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="Style/dado.css" />  <!-- importo la hoja de estilos personalizada -->
+
 </head>
+
 <body class="d-flex align-items-center justify-content-center vh-100 bg-light">
   <div style="width: 100%; max-width: 500px;">
-    <div id="pantalla-inicial" class="card p-4 shadow text-center">
-      <h1 class="mb-4">Batalla de Dados</h1>
 
-      <div class="mb-3 text-start">
-        <label for="nombre-j1" class="form-label">Nombre Jugador 1:</label>
-        <input type="text" id="nombre-j1" class="form-control" placeholder="Jugador A">
+    <!-- aca esta la pantalla inicial -->
+    <div id="pantalla-inicial" class="card shadow text-center">
+      <h1 class="mb-2">Batalla de Dados!!!!!!!!!</h1>
+      <!-- para que el jugador 1 ingrese su nombre -->
+      <div class="text-start">
+        <label for="nombre-j1" class="label">Nombre Jugador 1</label> 
+        <input type="text" id="nombre-j1" class="form-control form-control-sm" placeholder="Jugador 1">
       </div>
-
-      <div class="mb-3 text-start">
-        <label for="nombre-j2" class="form-label">Nombre Jugador 2:</label>
-        <input type="text" id="nombre-j2" class="form-control" placeholder="Jugador B">
+      <!-- para que el jugador 2 ingrese su nombre -->
+      <div class="mt-2 text-start">
+        <label for="nombre-j2" class="label">Nombre Jugador 2</label>
+        <input type="text" id="nombre-j2" class="form-control form-control-sm" placeholder="Jugador 2">
       </div>
-
-      <button id="boton-jugar" class="btn btn-primary btn-lg w-100 mt-3">Jugar</button>
+      <!-- boton de jugar para ir a la pantalla del juego -->
+      <button id="boton-jugar" type="button" class="btn btn-primary btn-lg w-100 mt-3">Jugar</button>
+      <!-- pequeño modal para leer las reglas -->
+      <button id="btn-ver-reglas" type="button" class="btn btn-outline-secondary w-100 mt-2" data-bs-toggle="modal" data-bs-target="#modalReglas">Ver reglas</button>
     </div>
 
-    <div id="pantalla-juego" class="card p-4 shadow d-none">
+    <!-- aca esta la pantalla del juego -->
+    <div id="pantalla-juego" class="card shadow d-none">
 
-<div class="text-center w-100">
-    <img id="avatar-j1" src="jugador.jpg" width="90" class="mb-2">
-    <h2 id="nombre-tablero-j1" class="text-primary"></h2>
-    <p>Tirada: <span id="puntos-j1" class="fw-bold fs-4">-</span></p>
-    <p>Rondas Ganadas: <span id="rondas-ganadas-j1" class="fw-bold fs-4">0</span></p>
-    <button id="btn-j1" class="btn btn-success w-75">Tirar Dado</button>
-</div>
+      <div class="game-header">
+        <h3 id="mensaje-ronda" class="text-secondary mb-0">Que comience el juego!</h3>
+        <button id="btn-volver-menu" type="button" class="btn btn-sm btn-outline-secondary">Volver al menu</button>
+      </div>
 
-      <hr class="w-100 my-4">
-
-<div class="text-center w-100">
-    <img id="avatar-j2" src="jugador.jpg" width="90" class="mb-2">
-    <h2 id="nombre-tablero-j2" class="text-danger"></h2>
-    <p>Tirada: <span id="puntos-j2" class="fw-bold fs-4">-</span></p>
-    <p>Rondas Ganadas: <span id="rondas-ganadas-j2" class="fw-bold fs-4">0</span></p>
-    <button id="btn-j2" class="btn btn-success w-75">Tirar Dado</button>
-</div>
+      <!-- pantallas del jugador 1 -->
+      <div class="text-center">
+        <img id="avatar-j1" src="img/jugador.jpg" class="avatar mb-1" alt="J1">
+        <h2 id="nombre-tablero-j1" class="text-primary"></h2>
+        <p class="mb-1">Tirada: <span id="puntos-j1" class="fw-bold fs-5">-</span></p>
+        <p class="mb-2">Rondas: <span id="rondas-ganadas-j1" class="fw-bold fs-5">0</span></p>
+        <button id="btn-j1" type="button" class="btn btn-success w-75">Tirar Dado</button>
+      </div>
 
       <hr class="w-100 my-4">
 
-      <h3 id="mensaje-ronda" class="text-muted">¡Que comience el juego!</h3>
-      <button id="btn-reiniciar" class="btn btn-outline-danger mt-3">Reiniciar Juego</button>
+      <!-- aca estaria la visualizacion del dado central (con los estilos lo agrando para que se vea mas grande) -->
+      <div class="text-center my-1">
+        <div id="dado" class="dado" aria-label="dado">🎲</div>
+      </div>
+
+      <hr class="w-100 my-4">
+
+      <!-- aca estaria la parte de la pantalla del jugador 2 -->
+      <div class="text-center">
+        <img id="avatar-j2" src="img/jugador.jpg" class="avatar mb-1" alt="J2">
+        <h2 id="nombre-tablero-j2" class="text-danger"></h2>
+        <p class="mb-1">Tirada: <span id="puntos-j2" class="fw-bold fs-5">-</span></p>
+        <p class="mb-2">Rondas: <span id="rondas-ganadas-j2" class="fw-bold fs-5">0</span></p>
+        <button id="btn-j2" type="button" class="btn btn-success w-75">Tirar Dado</button>
+      </div>
+
+      <hr class="w-100 my-3">
+      <div class="d-flex gap-2">
+        <button id="btn-reiniciar" type="button" class="btn btn-outline-danger w-50">Reiniciar Juego</button>
+        <button id="btn-guardar"   type="button" class="btn btn-outline-primary w-50">Guardar</button>
+      </div>
     </div>
   </div>
 
-<script src="./js/juego.js" type="module"></script>
+  <!-- aca esta el modal de las reglas -->
+  <div class="modal fade" id="modalReglas" tabindex="-1" aria-labelledby="modalReglasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header py-2">
+          <h5 class="modal-title" id="modalReglasLabel">Reglas del juego</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <ol class="mb-0">
+            <li>Empieza el <strong>Jugador 1</strong>.</li>
+            <li>Gana la ronda quien saque el numero mayor</li>
+            <li>Gana la partida el primero en llegar a <strong>3 rondas</strong> (mejor de 5) </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/juego.js" type="module"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </body>
