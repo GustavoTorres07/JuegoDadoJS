@@ -8,8 +8,8 @@ export default class Juego {
 
     this.btnJugar = document.getElementById("boton-jugar"); // capturo el boton para iniciar la partida (boton jugar)
     this.btnVolverMenu = document.getElementById("btn-volver-menu"); // capturo el boton para volver al menu
-    this.btnReiniciar  = document.getElementById("btn-reiniciar"); // capturo el boton para reiniciar la partida
-    this.btnGuardar    = document.getElementById("btn-guardar"); // capturo el boton para guardar el estado en localstorage
+    this.btnReiniciar = document.getElementById("btn-reiniciar"); // capturo el boton para reiniciar la partida
+    this.btnGuardar = document.getElementById("btn-guardar"); // capturo el boton para guardar el estado en localstorage
 
     this.inNombreJ1 = document.getElementById("nombre-j1"); // capturo el input nombre del jugador 1
     this.inNombreJ2 = document.getElementById("nombre-j2"); // capturo el input nombre del jugador 2
@@ -148,15 +148,15 @@ export default class Juego {
     const nombreJ1 = this.inNombreJ1.value || "Jugador 1";  //lo mismo que en reinciar
     const nombreJ2 = this.inNombreJ2.value || "Jugador 2";   
 
-    this.j1 = new Jugador(nombreJ1);                       
+    this.j1 = new Jugador(nombreJ1);   // creo objetos jugador 1 y jugador 2                     
     this.j2 = new Jugador(nombreJ2);
 
-    this.lblNombreJ1.textContent = this.j1.nombre;          
+    this.lblNombreJ1.textContent = this.j1.nombre;   // actualizo los nombres en la pantalla del juego       
     this.lblNombreJ2.textContent = this.j2.nombre;
 
-    this.mostrarPantalla("juego");                           
-    this.prepararNuevaRonda(true);                            
-    this.guardarEstado();                                     
+    this.mostrarPantalla("juego");     // muestro la pantalla del juego                     
+    this.prepararNuevaRonda(true);           // preparo la primera ronda del juego                 
+    this.guardarEstado();            // guardo el estado actual en localstorage     
   }
 
   // funcion para reiniciar la partida
