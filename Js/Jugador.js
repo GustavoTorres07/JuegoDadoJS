@@ -1,18 +1,18 @@
-//le agrego export default para poder importar la clase en otros archivos
 export default class Jugador {
 
-    constructor(nombre = "Jugador") {
-        this.nombre = nombre; // por si el usuario no ingresa ningun nombre le asignamos un valor por defecto
-        this.rondasGanadas = 0; // aca inicializamos en 0 las rondas ganadas obviamente
-    }
+  constructor(nombre = "Jugador") {
+    this.nombre = nombre;       // Guardo el nombre del jugador
+    this.rondasGanadas = 0;     // le inicializo las rondas ganadas en 0 obviamente
+  }
 
-    ganarRonda(){
-        this.rondasGanadas += 1; // para incrementar las rondas ganadas en 1
-        return this.rondasGanadas; //aca devolvemos el valor actualizado de las rondas ganadas de cada jugador en caso de ganar una ronda
-    }
+  // funcion para aumentar en 1 las rondas ganadas y actualizar rondas ganadas
+  ganarRonda() {
+    this.rondasGanadas++;       
+    return this.rondasGanadas;  
+  }
 
-        resetear() {
-        this.rondasGanadas = 0; // vuelve a 0 rondas ganadas cuando reiniciamos el juego
-    }
-
+  // Reinicia las rondas a cero
+  resetear() {
+    this.rondasGanadas = 0;
+  }
 }

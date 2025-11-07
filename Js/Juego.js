@@ -1,287 +1,253 @@
-import Jugador from "./Jugador.js"; // traemos la clase Jugador para crear J1 y J2
+import Jugador from "./Jugador.js"; // aca traigo la clase jugador para crear J1 y el J2
+import Dado from "./Dado.js"; // aca traigo la clase dado
+export default class Juego {
+  constructor() {
+    //  realizo las capturas de los elementos html que voy a utilizar
+    this.pantallaInicial = document.getElementById("pantalla-inicial"); // capturo el div de la pantalla inicial
+    this.pantallaJuego = document.getElementById("pantalla-juego");   // capturo el div de la pantalla del juego
 
-// Agarramos todo lo que usamos del html
-const pantallaInicial = document.getElementById("pantalla-inicial"); // pantalla de inicio
-const pantallaJuego   = document.getElementById("pantalla-juego"); // pantalla del juego
+    this.btnJugar = document.getElementById("boton-jugar"); // capturo el boton para iniciar la partida (boton jugar)
+    this.btnVolverMenu = document.getElementById("btn-volver-menu"); // capturo el boton para volver al menu
+    this.btnReiniciar  = document.getElementById("btn-reiniciar"); // capturo el boton para reiniciar la partida
+    this.btnGuardar    = document.getElementById("btn-guardar"); // capturo el boton para guardar el estado en localstorage
 
-const botonJugar    = document.getElementById("boton-jugar"); // boton jugar
-const btnVerReglas  = document.getElementById("btn-ver-reglas"); // boton ver reglas (que es un modal)
-const btnVolverMenu = document.getElementById("btn-volver-menu"); // boton volver al menu
+    this.inNombreJ1 = document.getElementById("nombre-j1"); // capturo el input nombre del jugador 1
+    this.inNombreJ2 = document.getElementById("nombre-j2"); // capturo el input nombre del jugador 2
 
-const inputNombreJ1 = document.getElementById("nombre-j1"); // nombre del jugador 1
-const inputNombreJ2 = document.getElementById("nombre-j2"); // nombre del jugador 2
+    this.lblNombreJ1 = document.getElementById("nombre-tablero-j1"); // capturo la etiqueta nombre J1 de la pantalla juego
+    this.lblNombreJ2 = document.getElementById("nombre-tablero-j2"); // capturo la etiqueta nombre J2 de la pantalla juego
+    this.lblTiradaJ1 = document.getElementById("tirada-j1"); // captura el numero que saco J1 
+    this.lblTiradaJ2 = document.getElementById("tirada-j2"); // captura el numero que saco J2
+    this.lblRondasJ1 = document.getElementById("rondas-ganadas-j1"); // contador de rondas ganadas para J1
+    this.lblRondasJ2 = document.getElementById("rondas-ganadas-j2"); // contador de rondas ganadas para J2
 
-const nombreTableroJ1 = document.getElementById("nombre-tablero-j1"); // nombre del J1 en pantalla
-const elTiradaJ1      = document.getElementById("puntos-j1"); // numero que saco el J1
-const elRondasJ1      = document.getElementById("rondas-ganadas-j1"); // rondas ganadas por el J1
-const btnJ1           = document.getElementById("btn-j1"); // boton de tirar dado del J1
+    this.btnJ1 = document.getElementById("btn-j1"); // boton de tirar dado de J1
+    this.btnJ2 = document.getElementById("btn-j2"); // boton de tirar dado de J2
 
-const nombreTableroJ2 = document.getElementById("nombre-tablero-j2"); // nombre del J2 en patanlla
-const elTiradaJ2      = document.getElementById("puntos-j2"); // numero que saco el J2
-const elRondasJ2      = document.getElementById("rondas-ganadas-j2"); // rondas ganadas por el J2
-const btnJ2           = document.getElementById("btn-j2"); // boton de tirar dado del J2
+    this.mensaje = document.getElementById("mensaje-ronda"); // mensaje que muestra el estado del juego
+    this.domDado = document.getElementById("dado"); // capturo el dado grande del centro
 
-const elMensaje       = document.getElementById("mensaje-ronda"); // textito con el estado del turno
-const btnReiniciar    = document.getElementById("btn-reiniciar"); // boton para reiniciar el juego
-const btnGuardar      = document.getElementById("btn-guardar"); //  boton para guardar el estado (localstorage)
+    this.j1 = null; // preparo la variable para el jugador 1 aunque todavia no la creo
+    this.j2 = null;  // preparo la variable para el jugado 2  aunque todavia no la creo
+    this.t1 = 0; // guarda la ulima tirada de J1 pero la inicializo en 0 obviamente 
+    this.t2 = 0; // guarda la ulima tirada de J2 pero la inicializo en 0 obviamente 
+    this.dado = new Dado(this.domDado); // creo el dado pasando el elemento html domDado
 
-const dado  = document.getElementById("dado"); // dado grande del medio
-const CARAS = ["\u2680","\u2681","\u2682","\u2683","\u2684","\u2685"]; // las caras del dado (con unicode)
+    // clave para el locastorage
+    this.LS_KEY = "batallaDadosEstadoV1"; 
 
-// estado de memoria
-let jugador1, jugador2; // aca guardamos las instancias de J1 y J2
-let tiradaJ1 = 0; // ultimo numero que saco J1 (inicializamos en 0 obviamente)
-let tiradaJ2 = 0; // ultimo numero que saco J2 (inicializamos en 0 obviamente)
-
-const LS_KEY = "batallaDadosEstadoV1"; // clave para guardar en localStorage
-
-//aca van funciones utiles que necesitamos
-
-function tirarDado() { // funcion para tirar el dado
-  return Math.floor(Math.random() * 6) + 1; // devuelve un numero aleatorio entre 1 y 6
-}
-
-// funcion para la animacion del dado
-function animarDadoHasta(valor) { 
-  //hace girar el dado un toque y lo deja mostrando la cara final
-  return new Promise(res => {
-    dado.textContent = "🎲";
-    dado.classList.add("girando");
-    setTimeout(() => {
-      dado.classList.remove("girando");
-      dado.textContent = CARAS[valor - 1];
-      res();
-    }, 600); // tiempo de la animacion css
-  });
-}
-
-// funcion para mostrar la pantalla correspondiente
-function mostrarPantalla(nombre) {
-  //cambiamos entre menu inicial y juego (osea las pantallas)
-  if (nombre === "inicial") {
-    pantallaInicial.classList.remove("d-none");
-    pantallaJuego.classList.add("d-none");
-  } else {
-    pantallaInicial.classList.add("d-none");
-    pantallaJuego.classList.remove("d-none");
+    // asigno los eventos a los botones
+    this.btnJugar.addEventListener("click", () => this.iniciar());      
+    this.btnVolverMenu.addEventListener("click", () => this.volverAlMenu());
+    this.btnReiniciar.addEventListener("click", () => this.reiniciar()); 
+    this.btnGuardar.addEventListener("click", () => this.guardarEstado());
+    this.btnJ1.addEventListener("click", () => this.tirarJ1());          
+    this.btnJ2.addEventListener("click", () => this.tirarJ2());         
   }
-}
 
-// funcion para preparar una nueva ronda
-function prepararNuevaRonda(esInicio = false) {
-  // dejamos todo listo para la ronda: se borra la tirada y arranaca J1
-  tiradaJ1 = 0;
-  tiradaJ2 = 0;
-  elTiradaJ1.textContent = "-";
-  elTiradaJ2.textContent = "-";
-  btnJ1.disabled = false;
-  btnJ2.disabled = true;
-  elMensaje.textContent = esInicio ? "Que comience el juego!" : `Turno de ${jugador1.nombre}`;
-}
-// funcion para lanzar confetti al ganar el juego
-function lanzarConfetti() {
-  confetti({ particleCount: 180, spread: 90, origin: { y: 0.7 } });
-}
-// aca viene guardado / carga (persistencia) del estado del juego
-// funcion para guardar el estado actual del juego y poder restaurarlo
-function estadoActual() {
-  // armamos un objeto con todo lo necesario para recuperar la partida
-  return {
-    pantalla: pantallaJuego.classList.contains("d-none") ? "inicial" : "juego",
-    jugador1: { nombre: jugador1?.nombre ?? (inputNombreJ1.value || "Jugador 1"), rondasGanadas: jugador1?.rondasGanadas ?? 0 },
-    jugador2: { nombre: jugador2?.nombre ?? (inputNombreJ2.value || "Jugador 2"), rondasGanadas: jugador2?.rondasGanadas ?? 0 },
-    tiradaJ1,
-    tiradaJ2,
-    mensaje: elMensaje?.textContent ?? "Que comience el juego!",
-    dado: dado?.textContent ?? "🎲",
-    botones: {
-      j1: !!btnJ1 && btnJ1.disabled ? "off" : "on",
-      j2: !!btnJ2 && btnJ2.disabled ? "off" : "on"
+  // funcion para mostrar una pantalla o otra (la pantalla de inicio o la del juego)
+  mostrarPantalla(nombre) {
+    if (nombre === "inicial") {                              
+      this.pantallaInicial.classList.remove("d-none");        
+      this.pantallaJuego.classList.add("d-none");            
+    } else {                                                   
+      this.pantallaInicial.classList.add("d-none");           
+      this.pantallaJuego.classList.remove("d-none");          
     }
-  };
-}
-// funcion para guardar el estado en localStorage
-function guardarEstado() {
-  // mandamos el estado al localstorage en json
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(estadoActual()));
-  } catch (e) {
-    console.warn("No se pudo guardar el estado:", e);
-  }
-}
-
-// funcion para restaurar el estado desde localStorage
-function restaurarDesdeStorage() {
-  // si hay alguna partida guardada la traemos y dejamos como estaba
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return false;
-    const st = JSON.parse(raw);
-
-    // aca mostramos la pantalla correcta
-    mostrarPantalla(st.pantalla === "juego" ? "juego" : "inicial");
-
-    // creamos jugadores con su nombre y rondas que estaban guardadas
-    const n1 = st.jugador1?.nombre || "Jugador 1";
-    const n2 = st.jugador2?.nombre || "Jugador 2";
-    jugador1 = new Jugador(n1);
-    jugador2 = new Jugador(n2);
-    jugador1.rondasGanadas = st.jugador1?.rondasGanadas ?? 0;
-    jugador2.rondasGanadas = st.jugador2?.rondasGanadas ?? 0;
-
-    // actualizamos inputs y nombres visibles
-    inputNombreJ1.value = n1;
-    inputNombreJ2.value = n2;
-    nombreTableroJ1.textContent = n1;
-    nombreTableroJ2.textContent = n2;
-
-    // volvemos a mostrar tiradas, rondas y mensaje
-    tiradaJ1 = st.tiradaJ1 ?? 0;
-    tiradaJ2 = st.tiradaJ2 ?? 0;
-    elTiradaJ1.textContent = tiradaJ1 || "-";
-    elTiradaJ2.textContent = tiradaJ2 || "-";
-    elRondasJ1.textContent  = jugador1.rondasGanadas;
-    elRondasJ2.textContent  = jugador2.rondasGanadas;
-    elMensaje.textContent   = st.mensaje || "Que comience el juego!";
-
-    // el dado del medio
-    dado.textContent = st.dado || "🎲";
-
-    // volvemos a habilitar / deshabilitar los botones segun como estaban
-    if (st.botones?.j1 === "off") btnJ1.disabled = true; else btnJ1.disabled = false;
-    if (st.botones?.j2 === "off") btnJ2.disabled = true; else btnJ2.disabled = false;
-
-    return true;
-  } catch (e) {
-    console.warn("No se pudo restaurar estado:", e);
-    return false;
-  }
-}
-
-// aca viene la logica del juego
-function iniciarJuego() {
-  // leemos los nombres (los ingresados o por default) y creamos los jugadores y arrancamos
-  const nombreJ1 = inputNombreJ1.value || "Jugador 1";
-  const nombreJ2 = inputNombreJ2.value || "Jugador 2";
-
-  jugador1 = new Jugador(nombreJ1);
-  jugador2 = new Jugador(nombreJ2);
-
-  nombreTableroJ1.textContent = jugador1.nombre;
-  nombreTableroJ2.textContent = jugador2.nombre;
-
-  mostrarPantalla("juego");
-  prepararNuevaRonda(true);
-  guardarEstado();
-}
-
-// funcion para reiniciar el juego
-function reiniciarJuego() {
-  // dejamos todo como nuevo pero mantenemos los nombres ingresados
-  if (!jugador1 || !jugador2) {
-    // Si no hay jugadores aún, inícialos con lo que haya
-    const n1 = inputNombreJ1.value || "Jugador 1";
-    const n2 = inputNombreJ2.value || "Jugador 2";
-    jugador1 = new Jugador(n1);
-    jugador2 = new Jugador(n2);
-  } else {
-    // reseteo rondas ganadas en cero (llamo al metodo en Jugador.js)
-    jugador1.resetear?.();
-    jugador2.resetear?.();
   }
 
-  elRondasJ1.textContent = "0";
-  elRondasJ2.textContent = "0";
-  dado.textContent = "🎲";
-  prepararNuevaRonda(true);
-  guardarEstado();
-}
-// funcion para volver al menu inicial
-function volverAlMenu() {
-  mostrarPantalla("inicial");
-  guardarEstado(); // mantenemos los nombres de los jugadores ingresados en los inputs
-}
-
-// funcion para comparar las tiradas de ambos jugadores
-function compararTiradas() {
-  //aca se decide quien gano la ronda (cuando digo ronda me refiero al turno) y si alguien gano el juego
-  let ganadorRonda = null;
-
-  if (tiradaJ1 > tiradaJ2) {
-    ganadorRonda = jugador1;
-    elMensaje.textContent = `${ganadorRonda.nombre} gano la ronda!`;
-    elRondasJ1.textContent = jugador1.ganarRonda();
-  } else if (tiradaJ2 > tiradaJ1) {
-    ganadorRonda = jugador2;
-    elMensaje.textContent = `${ganadorRonda.nombre} gano la ronda!`;
-    elRondasJ2.textContent = jugador2.ganarRonda();
-  } else {
-    elMensaje.textContent = "Empate!";
+  // funcion para preparar una nueva ronda
+  prepararNuevaRonda(esInicio = false) {
+    this.t1 = 0; this.t2 = 0;                                
+    this.lblTiradaJ1.textContent = "-";                       
+    this.lblTiradaJ2.textContent = "-";                       
+    this.btnJ1.disabled = false;                              
+    this.btnJ2.disabled = true;                               
+    this.mensaje.textContent = esInicio                       
+      ? "Que comience el juego!"                             
+      : `Turno de ${this.j1?.nombre || "Jugador 1"}`;         
+    this.dado.setCara(null);                                  
   }
 
-  // nosotros lo hicimos al mejor de 5 rondas osea que gana la partida el jugador que primero gane 3 rondas)
-  if (jugador1.rondasGanadas === 3 || jugador2.rondasGanadas === 3) {
-    elMensaje.textContent = `${ganadorRonda.nombre} GANO EL JUEGO!!!`;
-    lanzarConfetti();
-    btnJ1.disabled = true;
-    btnJ2.disabled = true;
-    guardarEstado();
-    return;
+  // esta funcion guarda el estado actual del juego para guardarlo en localstorage
+  estadoActual() {
+    return {
+      pantalla: this.pantallaJuego.classList.contains("d-none") ? "inicial" : "juego", 
+      jugador1: { 
+        nombre: this.j1?.nombre ?? (this.inNombreJ1.value || "Jugador 1"),             
+        rondasGanadas: this.j1?.rondasGanadas ?? 0                                     
+      },
+      jugador2: { 
+        nombre: this.j2?.nombre ?? (this.inNombreJ2.value || "Jugador 2"),             
+        rondasGanadas: this.j2?.rondasGanadas ?? 0                                    
+      },
+      t1: this.t1,                                                                      
+      t2: this.t2,                                                                      
+      mensaje: this.mensaje?.textContent ?? "Que comience el juego!",                
+      dado: this.domDado?.textContent ?? "🎲",                                        
+      botones: {                                                                        
+        j1: this.btnJ1.disabled ? "off" : "on",
+        j2: this.btnJ2.disabled ? "off" : "on"
+      }
+    };
   }
 
-  // si nadie gano aun dejamos todo listo para que J1 empiece la proxima ronda
-  btnJ1.disabled = false;
-  btnJ2.disabled = true;
-  elMensaje.textContent += ` — Turno de ${jugador1.nombre}`;
-  guardarEstado();
+  // se guarda el estado en localStorage como un json
+  guardarEstado() {
+    try { 
+      localStorage.setItem(this.LS_KEY, JSON.stringify(this.estadoActual())); // aca con stringify lo convierto a json
+    }
+    catch(e){ 
+      console.warn("No se pudo guardar estado:", e);                         
+    }
+  }
+
+  // se restaura desde localStorage si es que habia algo guardado
+  restaurar() {
+    try {
+      const raw = localStorage.getItem(this.LS_KEY);         
+      if (!raw) return false;                                
+      const st = JSON.parse(raw); // con parse lo convierte de json a objeto                       
+
+      this.mostrarPantalla(st.pantalla === "juego" ? "juego" : "inicial"); // muestro la pantalla correcta
+
+      const n1 = st.jugador1?.nombre || "Jugador 1";        
+      const n2 = st.jugador2?.nombre || "Jugador 2";         
+      this.j1 = new Jugador(n1);                             
+      this.j2 = new Jugador(n2);                             
+      this.j1.rondasGanadas = st.jugador1?.rondasGanadas ?? 0; 
+      this.j2.rondasGanadas = st.jugador2?.rondasGanadas ?? 0; 2
+
+      this.inNombreJ1.value = n1;                           
+      this.inNombreJ2.value = n2;
+      this.lblNombreJ1.textContent = n1;                     
+      this.lblNombreJ2.textContent = n2;
+
+      this.t1 = st.t1 ?? 0;                                  
+      this.t2 = st.t2 ?? 0;                                  
+      this.lblTiradaJ1.textContent = this.t1 || "-";         
+      this.lblTiradaJ2.textContent = this.t2 || "-";         
+      this.lblRondasJ1.textContent = this.j1.rondasGanadas;  
+      this.lblRondasJ2.textContent = this.j2.rondasGanadas;  2
+
+      this.mensaje.textContent = st.mensaje || "Que comience el juego!";
+      this.domDado.textContent = st.dado || "🎲";           
+
+      this.btnJ1.disabled = (st.botones?.j1 === "off");     
+      this.btnJ2.disabled = (st.botones?.j2 === "off");      
+
+      return true;                                          
+    } catch(e){
+      console.warn("No se pudo restaurar estado:", e);       
+      return false;
+    }
+  }
+
+  // funcion para iniciar la partida
+  iniciar() {
+    const nombreJ1 = this.inNombreJ1.value || "Jugador 1";  //lo mismo que en reinciar
+    const nombreJ2 = this.inNombreJ2.value || "Jugador 2";   
+
+    this.j1 = new Jugador(nombreJ1);                       
+    this.j2 = new Jugador(nombreJ2);
+
+    this.lblNombreJ1.textContent = this.j1.nombre;          
+    this.lblNombreJ2.textContent = this.j2.nombre;
+
+    this.mostrarPantalla("juego");                           
+    this.prepararNuevaRonda(true);                            
+    this.guardarEstado();                                     
+  }
+
+  // funcion para reiniciar la partida
+  reiniciar() {
+    if (!this.j1 || !this.j2) {                               
+      const n1 = this.inNombreJ1.value || "Jugador 1";        // si jugador 1 o jugador 2 no existen, los creo y le asigno por
+      const n2 = this.inNombreJ2.value || "Jugador 2";        // defecto el nombre de Jugador 1 y Jugador 2
+      this.j1 = new Jugador(n1);                              
+      this.j2 = new Jugador(n2);
+    } else {
+      this.j1.resetear();                                    
+      this.j2.resetear();                                     
+    }
+
+    this.lblRondasJ1.textContent = "0";                       
+    this.lblRondasJ2.textContent = "0";                      
+    this.dado.setCara(null);                               
+    this.prepararNuevaRonda(true);                          
+    this.guardarEstado();                                     
+  }
+
+  //funcion para volver al menu
+  volverAlMenu() {
+    this.mostrarPantalla("inicial");                          
+    this.guardarEstado();                                    
+  }
+
+  //funcion para que el jugador 1 tire el dado
+  async tirarJ1() {
+    if (this.t2 !== 0) this.prepararNuevaRonda();            
+
+    this.btnJ1.disabled = true; // si el j1 ya tiro desactivo su boton                            
+    this.btnJ2.disabled = true;  // para evitar doble click de J1                             
+    this.mensaje.textContent = "Tirando...";                  
+    this.guardarEstado();                                     
+
+    this.t1 = this.dado.tirar();                              
+    await this.dado.animarHasta(this.t1);                     
+    this.lblTiradaJ1.textContent = this.t1;                  
+
+    this.btnJ2.disabled = false;                              
+    this.mensaje.textContent = `Turno de ${this.j2.nombre}`;  
+    this.guardarEstado();                                     
+  }
+
+  // funcion para que el jugador 2 tire el dado
+  async tirarJ2() {
+    this.btnJ1.disabled = true;                              
+    this.btnJ2.disabled = true;                               
+    this.mensaje.textContent = "Tirando...";                 
+    this.guardarEstado();                                     
+
+    this.t2 = this.dado.tirar();                              
+    await this.dado.animarHasta(this.t2);                     
+    this.lblTiradaJ2.textContent = this.t2;                  
+
+    this.compararTiradas();                                   
+  }
+
+  // funcion para ver quien gano la ronda 
+  compararTiradas() {
+    let ganadorRonda = null;                                   
+
+    if (this.t1 > this.t2) {                                 
+      ganadorRonda = this.j1;
+      this.mensaje.textContent = `${ganadorRonda.nombre} gano la ronda!`; 
+      this.lblRondasJ1.textContent = this.j1.ganarRonda();     
+    } else if (this.t2 > this.t1) {                           
+      ganadorRonda = this.j2;
+      this.mensaje.textContent = `${ganadorRonda.nombre} gano la ronda!`; 
+      this.lblRondasJ2.textContent = this.j2.ganarRonda();     
+    } else {
+      this.mensaje.textContent = "Empate!";                  
+    }
+
+    // aca le digo la regla de que gana el juego el primer jugador en ganar 3 rondas
+    if (this.j1.rondasGanadas === 3 || this.j2.rondasGanadas === 3) {
+      this.mensaje.textContent = `${ganadorRonda.nombre} GANO EL JUEGO!`; 
+      if (typeof confetti === "function") {                    
+        confetti({ particleCount: 180, spread: 90, origin: { y: 0.7 } });
+      }
+      this.btnJ1.disabled = true;                            
+      this.btnJ2.disabled = true;
+      this.guardarEstado();                                   
+      return;                                               
+    }
+
+    // Si aun nadie gano, preparo la siguiente ronda
+    this.btnJ1.disabled = false;                               
+    this.btnJ2.disabled = true;                               
+    this.mensaje.textContent += ` — Turno de ${this.j1.nombre}`; 
+    this.guardarEstado();                                      
+  }
 }
-
-// definimos y asignamos los eventos a los botones
-botonJugar.addEventListener("click", iniciarJuego);
-btnVolverMenu.addEventListener("click", volverAlMenu);
-btnReiniciar.addEventListener("click", reiniciarJuego);
-btnGuardar.addEventListener("click", guardarEstado);
-
-btnJ1.addEventListener("click", async () => {
-  // si la ronda anterior ya tuvo las dos tiradas limpio para la nueva
-  if (tiradaJ2 !== 0) prepararNuevaRonda(); 
-
-  // animo el dado y guardo la tirada de J1
-  btnJ1.disabled = true;
-  btnJ2.disabled = true;
-  elMensaje.textContent = "Tirando...";
-  guardarEstado();
-
-  tiradaJ1 = tirarDado();
-  await animarDadoHasta(tiradaJ1);
-  elTiradaJ1.textContent = tiradaJ1;
-  // aca le toca a J2 
-  btnJ2.disabled = false;
-  elMensaje.textContent = `Turno de ${jugador2.nombre}`;
-  guardarEstado();
-});
-
-btnJ2.addEventListener("click", async () => {
-  // bueno aca es la misma idea pero para el J2
-  btnJ1.disabled = true;
-  btnJ2.disabled = true;
-  elMensaje.textContent = "Tirando...";
-  guardarEstado();
-
-  tiradaJ2 = tirarDado();
-  await animarDadoHasta(tiradaJ2);
-  elTiradaJ2.textContent = tiradaJ2;
-  // vemos quien gano la ronda o si ya se gano la partida
-  compararTiradas(); //aca dentro ya se guarda el estado
-});
-
-// al cargar la pagina intento recuperar lo que habia 
-(() => {
-  const ok = restaurarDesdeStorage();
-  if (!ok) {
-    // si no llegara haber nada guardado se empieza de cero
-    mostrarPantalla("inicial");
-    elMensaje.textContent = "Que comience el juego!";
-    dado.textContent = "🎲";
-  }
-})();
