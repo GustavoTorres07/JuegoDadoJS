@@ -1,5 +1,6 @@
 import Jugador from "./Jugador.js"; // aca traigo la clase jugador para crear J1 y el J2
 import Dado from "./Dado.js"; // aca traigo la clase dado
+
 export default class Juego {
   constructor() {
     //  realizo las capturas de los elementos html que voy a utilizar
@@ -21,6 +22,12 @@ export default class Juego {
     this.lblRondasJ1 = document.getElementById("rondas-ganadas-j1"); // contador de rondas ganadas para J1
     this.lblRondasJ2 = document.getElementById("rondas-ganadas-j2"); // contador de rondas ganadas para J2
 
+    // nuevos: suma total y cantidad de tiradas
+    this.lblSumaJ1  = document.getElementById("suma-j1");  // sumatoria de puntos J1
+    this.lblSumaJ2  = document.getElementById("suma-j2");  // sumatoria de puntos J2
+    this.lblTirosJ1 = document.getElementById("tiros-j1"); // cantidad de tiradas J1
+    this.lblTirosJ2 = document.getElementById("tiros-j2"); // cantidad de tiradas J2
+
     this.btnJ1 = document.getElementById("btn-j1"); // boton de tirar dado de J1
     this.btnJ2 = document.getElementById("btn-j2"); // boton de tirar dado de J2
 
@@ -31,6 +38,12 @@ export default class Juego {
     this.j2 = null;  // preparo la variable para el jugado 2  aunque todavia no la creo
     this.t1 = 0; // guarda la ulima tirada de J1 pero la inicializo en 0 obviamente 
     this.t2 = 0; // guarda la ulima tirada de J2 pero la inicializo en 0 obviamente 
+
+    this.suma1  = 0; // suma total de puntos para J1
+    this.suma2  = 0; // suma total de puntos para J2
+    this.tiros1 = 0; // cantidad de tiradas de J1
+    this.tiros2 = 0; // cantidad de tiradas de J2
+
     this.dado = new Dado(this.domDado); // creo el dado pasando el elemento html domDado
 
     // clave para el locastorage
@@ -81,8 +94,13 @@ export default class Juego {
         nombre: this.j2?.nombre ?? (this.inNombreJ2.value || "Jugador 2"),             
         rondasGanadas: this.j2?.rondasGanadas ?? 0                                    
       },
+      // guardo también tiradas actuales, sumas y contadores
       t1: this.t1,                                                                      
       t2: this.t2,                                                                      
+      suma1: this.suma1,
+      suma2: this.suma2,
+      tiros1: this.tiros1,
+      tiros2: this.tiros2,
       mensaje: this.mensaje?.textContent ?? "Que comience el juego!",                
       dado: this.domDado?.textContent ?? "🎲",                                        
       botones: {                                                                        
@@ -116,7 +134,7 @@ export default class Juego {
       this.j1 = new Jugador(n1);                             
       this.j2 = new Jugador(n2);                             
       this.j1.rondasGanadas = st.jugador1?.rondasGanadas ?? 0; 
-      this.j2.rondasGanadas = st.jugador2?.rondasGanadas ?? 0; 2
+      this.j2.rondasGanadas = st.jugador2?.rondasGanadas ?? 0; 
 
       this.inNombreJ1.value = n1;                           
       this.inNombreJ2.value = n2;
@@ -128,7 +146,18 @@ export default class Juego {
       this.lblTiradaJ1.textContent = this.t1 || "-";         
       this.lblTiradaJ2.textContent = this.t2 || "-";         
       this.lblRondasJ1.textContent = this.j1.rondasGanadas;  
-      this.lblRondasJ2.textContent = this.j2.rondasGanadas;  2
+      this.lblRondasJ2.textContent = this.j2.rondasGanadas;  
+
+      // restauro sumas y cantidad de tiros
+      this.suma1  = st.suma1  ?? 0;
+      this.suma2  = st.suma2  ?? 0;
+      this.tiros1 = st.tiros1 ?? 0;
+      this.tiros2 = st.tiros2 ?? 0;
+
+      this.lblSumaJ1.textContent  = this.suma1;
+      this.lblSumaJ2.textContent  = this.suma2;
+      this.lblTirosJ1.textContent = this.tiros1;
+      this.lblTirosJ2.textContent = this.tiros2;
 
       this.mensaje.textContent = st.mensaje || "Que comience el juego!";
       this.domDado.textContent = st.dado || "🎲";           
@@ -150,6 +179,14 @@ export default class Juego {
 
     this.j1 = new Jugador(nombreJ1);   // creo objetos jugador 1 y jugador 2                     
     this.j2 = new Jugador(nombreJ2);
+
+    // reseteo sumas/tiros al iniciar una nueva partida
+    this.suma1 = this.suma2 = 0;
+    this.tiros1 = this.tiros2 = 0;
+    this.lblSumaJ1.textContent  = "0";
+    this.lblSumaJ2.textContent  = "0";
+    this.lblTirosJ1.textContent = "0";
+    this.lblTirosJ2.textContent = "0";
 
     this.lblNombreJ1.textContent = this.j1.nombre;   // actualizo los nombres en la pantalla del juego       
     this.lblNombreJ2.textContent = this.j2.nombre;
@@ -173,6 +210,15 @@ export default class Juego {
 
     this.lblRondasJ1.textContent = "0";                       
     this.lblRondasJ2.textContent = "0";                      
+
+    // también reseteo sumas y tiros
+    this.suma1 = this.suma2 = 0;
+    this.tiros1 = this.tiros2 = 0;
+    this.lblSumaJ1.textContent  = "0";
+    this.lblSumaJ2.textContent  = "0";
+    this.lblTirosJ1.textContent = "0";
+    this.lblTirosJ2.textContent = "0";
+
     this.dado.setCara(null);                               
     this.prepararNuevaRonda(true);                          
     this.guardarEstado();                                     
@@ -197,6 +243,12 @@ export default class Juego {
     await this.dado.animarHasta(this.t1);                     
     this.lblTiradaJ1.textContent = this.t1;                  
 
+    // acumulo suma total y cuento tiradas para J1
+    this.suma1  += this.t1;
+    this.tiros1 += 1;
+    this.lblSumaJ1.textContent  = this.suma1;
+    this.lblTirosJ1.textContent = this.tiros1;
+
     this.btnJ2.disabled = false;                              
     this.mensaje.textContent = `Turno de ${this.j2.nombre}`;  
     this.guardarEstado();                                     
@@ -212,6 +264,12 @@ export default class Juego {
     this.t2 = this.dado.tirar();                              
     await this.dado.animarHasta(this.t2);                     
     this.lblTiradaJ2.textContent = this.t2;                  
+
+    // acumulo suma total y cuento tiradas para J2
+    this.suma2  += this.t2;
+    this.tiros2 += 1;
+    this.lblSumaJ2.textContent  = this.suma2;
+    this.lblTirosJ2.textContent = this.tiros2;
 
     this.compararTiradas();                                   
   }

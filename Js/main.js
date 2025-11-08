@@ -4,7 +4,12 @@ const juego = new Juego();
 
 const musica = new Audio("/audio/game-8-bit.mp3"); 
 musica.loop = true; 
-musica.volume = 1; 
+musica.volume = 0.5; 
+
+// cuando se haga click en Jugar va a empezar la música
+document.getElementById("boton-jugar").addEventListener("click", () => {
+  musica.play(); 
+});
 
 //si no hay una partida guardada, muestra la pantalla inicial
 if (!juego.restaurar()) {

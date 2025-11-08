@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="Style/dado.css">
 </head>
 <body class="d-flex align-items-center justify-content-center vh-100 bg-light">
+
   <div style="width: 100%; max-width: 500px;">
 
     <!-- pantalla inicial -->
@@ -32,26 +33,43 @@
         <button id="btn-volver-menu" type="button" class="btn btn-sm btn-outline-secondary">Volver al menu</button>
       </div>
 
-      <div class="text-center">
-        <img id="avatar-j1" src="img/jugador.jpg" class="avatar mb-1" alt="J1">
-        <h2 id="nombre-tablero-j1" class="text-primary"></h2>
-        <p class="mb-1">Tirada: <span id="tirada-j1" class="fw-bold fs-5">-</span></p>
-        <p class="mb-2">Rondas: <span id="rondas-ganadas-j1" class="fw-bold fs-5">0</span></p>
-        <button id="btn-j1" type="button" class="btn btn-success w-75">Tirar Dado</button>
-      </div>
+      <!-- layout en tres columnas con bootstrap: J1 | DADO | J2 -->
+      <div class="row text-center align-items-center g-3">
 
-      <hr class="w-100 my-4">
-      <div class="text-center my-1">
-        <div id="dado" class="dado" aria-label="dado">🎲</div>
-      </div>
-      <hr class="w-100 my-4">
+        <!-- columna izquierda: jugador 1 -->
+        <div class="col-12 col-md-4">
+          <img id="avatar-j1" src="img/jugador.jpg" class="avatar mb-1" alt="J1">
+          <h2 id="nombre-tablero-j1" class="text-primary"></h2>
 
-      <div class="text-center">
-        <img id="avatar-j2" src="img/jugador.jpg" class="avatar mb-1" alt="J2">
-        <h2 id="nombre-tablero-j2" class="text-danger"></h2>
-        <p class="mb-1">Tirada: <span id="tirada-j2" class="fw-bold fs-5">-</span></p>
-        <p class="mb-2">Rondas: <span id="rondas-ganadas-j2" class="fw-bold fs-5">0</span></p>
-        <button id="btn-j2" type="button" class="btn btn-success w-75">Tirar Dado</button>
+          <!-- stats de J1 -->
+          <p class="mb-1">Tirada: <span id="tirada-j1" class="fw-bold fs-5">-</span></p>
+          <p class="mb-1">Suma total: <span id="suma-j1" class="fw-bold">0</span></p>
+          <p class="mb-1">Tirada: <span id="tiros-j1" class="fw-bold">0</span></p>
+          <p class="mb-2">Rondas: <span id="rondas-ganadas-j1" class="fw-bold fs-5">0</span></p>
+
+          <button id="btn-j1" type="button" class="btn btn-success w-75">Tirar Dado</button>
+        </div>
+
+        <!-- columna del centro: dado grande -->
+        <div class="col-12 col-md-4">
+          <div class="text-center my-1">
+            <div id="dado" class="dado" aria-label="dado">🎲</div>
+          </div>
+        </div>
+
+        <!-- columna derecha: jugador 2 -->
+        <div class="col-12 col-md-4">
+          <img id="avatar-j2" src="img/jugador.jpg" class="avatar mb-1" alt="J2">
+          <h2 id="nombre-tablero-j2" class="text-danger"></h2>
+
+          <!-- stats de J2 -->
+          <p class="mb-1">Tirada: <span id="tirada-j2" class="fw-bold fs-5">-</span></p>
+          <p class="mb-1">Suma total: <span id="suma-j2" class="fw-bold">0</span></p>
+          <p class="mb-1">Tirada: <span id="tiros-j2" class="fw-bold">0</span></p>
+          <p class="mb-2">Rondas: <span id="rondas-ganadas-j2" class="fw-bold fs-5">0</span></p>
+
+          <button id="btn-j2" type="button" class="btn btn-success w-75">Tirar Dado</button>
+        </div>
       </div>
 
       <hr class="w-100 my-3">
@@ -60,7 +78,6 @@
         <button id="btn-guardar"   type="button" class="btn btn-outline-primary w-50">Guardar</button>
       </div>
     </div>
-  </div>
 
   <!-- modal de reglas -->
   <div class="modal fade" id="modalReglas" tabindex="-1" aria-labelledby="modalReglasLabel" aria-hidden="true">
